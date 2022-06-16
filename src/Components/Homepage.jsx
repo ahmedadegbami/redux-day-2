@@ -1,49 +1,43 @@
-import { Container, ListGroup, Form } from "react-bootstrap"
-import { useEffect, useState } from "react"
-import SingleJobs from "./SingleJobs"
-import { connect } from "react-redux"
-import { Link } from "react-router-dom"
+import { Container, ListGroup, Form, Spinner } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import SingleJobs from "./SingleJobs";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import { getJobsAction } from "../redux/actions";
 
 const mapStateToProps = (state) => ({
   favLength: state.favourite.content.length,
-})
+  jobs: state.jobs.list,
+  areJobsLoading: state.jobs.isloading,
+  isThereError: state.jobs.isError
+});
 
-const Homepage = ({ favLength }) => {
-  const [state, setState] = useState([])
-  const [search, setSearch] = useState("")
-  const [searchBy, setSearchBy] = useState("")
+const mapDispatchToProps = (dispatch) => ({
+  getJobs: (url) => dispatch(getJobsAction(url))
+});
+
+const Homepage = ({ favLength, getJobs, jobs, areJobsLoading }) => {
+  // const [state, setState] = useState([]); // mapstate to props
+  const [search, setSearch] = useState("");
+  const [searchBy, setSearchBy] = useState("");
 
   useEffect(() => {
-    fetchData()
-  }, [])
-
-  const fetchData = async () => {
-    let url
+    let url;
     if (searchBy !== "Search by") {
-      url = `https://strive-jobs-api.herokuapp.com/jobs?category=${searchBy}&limit=10`
+      url = `https://strive-jobs-api.herokuapp.com/jobs?category=${searchBy}&limit=10`;
     }
     if (search !== "") {
-      url = `https://strive-jobs-api.herokuapp.com/jobs?search=${search}&limit=10`
+      url = `https://strive-jobs-api.herokuapp.com/jobs?search=${search}&limit=10`;
     }
     if (search === "" && searchBy === "Search by") {
-      url = `https://strive-jobs-api.herokuapp.com/jobs?limit=10`
+      url = `https://strive-jobs-api.herokuapp.com/jobs?limit=10`;
     }
     if (search !== "" && searchBy !== "Search by") {
-      url = `https://strive-jobs-api.herokuapp.com/jobs?category=${searchBy}&search=${search}&limit=10`
+      url = `https://strive-jobs-api.herokuapp.com/jobs?category=${searchBy}&search=${search}&limit=10`;
     }
+    getJobs(url);
+  }, [search, searchBy]);
 
-    try {
-      const response = await fetch(url)
-      if (response.ok) {
-        const data = await response.json()
-        setState(data.data)
-        console.log("gsgsgsg", data)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  console.log(state)
   return (
     <Container className="mt-5">
       <Form.Group
@@ -53,8 +47,8 @@ const Homepage = ({ favLength }) => {
         <div className="d-flex justify-content-between">
           <Form.Label>Example select</Form.Label>
           <Link to={"/favourite"}>
-            <button type="button" class="btn btn-primary">
-              Favourites <span class="badge badge-light">{favLength}</span>
+            <button type="button" className="btn btn-primary">
+              Favourites <span className="badge badge-light">{favLength}</span>
             </button>
           </Link>
         </div>
@@ -86,17 +80,28 @@ const Homepage = ({ favLength }) => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button onClick={fetchData}>Search</button>
+        <button
+        // onClick={fetchData}
+        >
+          Search
+        </button>
       </Form.Group>
 
       <h1>JOB LISTS</h1>
-      <ListGroup>
-        {state.map((job) => (
-          <SingleJobs key={job._id} job={job} />
-        ))}
-      </ListGroup>
+      {areJobsLoading ? (
+        <div className="text-center">
+          <Spinner variant="danger" animation="border" />
+          <h1>Loading...</h1>
+        </div>
+      ) : (
+        <ListGroup>
+          {jobs.map((job) => (
+            <SingleJobs key={job._id} job={job} />
+          ))}
+        </ListGroup>
+      )}
     </Container>
-  )
-}
+  );
+};
 
-export default connect(mapStateToProps, null)(Homepage)
+export default connect(mapStateToProps, mapDispatchToProps)(Homepage);

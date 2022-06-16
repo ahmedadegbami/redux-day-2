@@ -1,12 +1,13 @@
-import { ListGroup } from "react-bootstrap"
-import { Link } from "react-router-dom"
-import { addToFavAction } from "../redux/actions"
-import { connect } from "react-redux"
+import { ListGroup } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { addToFavAction } from "../redux/actions";
+import { connect } from "react-redux";
+
 const mapDispatchToProps = (dispatch) => {
   return {
-    addToFavourite: (job) => dispatch(addToFavAction(job)),
-  }
-}
+    addToFavourite: (job) => dispatch(addToFavAction(job))
+  };
+};
 
 const SingleJobs = ({ job, addToFavourite }) => {
   return (
@@ -19,7 +20,7 @@ const SingleJobs = ({ job, addToFavourite }) => {
         Add to Favourite
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default connect(null, mapDispatchToProps)(SingleJobs)
+export default connect(null, mapDispatchToProps)(SingleJobs);

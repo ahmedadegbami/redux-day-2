@@ -1,16 +1,16 @@
-import React from "react"
-import { Col, Container, ListGroup, Row } from "react-bootstrap"
-import { connect } from "react-redux"
-import { useParams } from "react-router-dom"
-import SingleJobFav from "./SingleJobFav"
+import React from "react";
+import { Col, Container, ListGroup, Row } from "react-bootstrap";
+import { connect } from "react-redux";
+import { useParams } from "react-router-dom";
+import SingleJobFav from "./SingleJobFav";
 
 const mapStateToProps = (state) => ({
-  favorites: state.favourite.content,
-})
+  favorites: state.favourite.content
+});
 
 const FavouritePage = ({ favorites }) => {
-  const params = useParams()
-  console.log(favorites)
+  const params = useParams();
+  console.log(favorites);
   return (
     <Container>
       <Row>
@@ -24,7 +24,7 @@ const FavouritePage = ({ favorites }) => {
         </Col>
       </Row>
     </Container>
-  )
-}
+  );
+};
 
-export default connect(mapStateToProps, null)(FavouritePage)
+export default connect(mapStateToProps, null)(FavouritePage);
