@@ -21,7 +21,7 @@ const jobsReducer = (state = initialState, action) => {
     case TOGGLE_ERROR:
       return {
         ...state,
-        isError: !state.isError
+        isError: true
       };
     default:
       return state;

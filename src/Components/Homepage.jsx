@@ -1,4 +1,4 @@
-import { Container, ListGroup, Form, Spinner } from "react-bootstrap";
+import { Container, ListGroup, Form, Spinner, Alert } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import SingleJobs from "./SingleJobs";
 import { connect } from "react-redux";
@@ -8,7 +8,7 @@ import { getJobsAction } from "../redux/actions";
 const mapStateToProps = (state) => ({
   favLength: state.favourite.content.length,
   jobs: state.jobs.list,
-  areJobsLoading: state.jobs.isloading,
+  areJobsLoading: state.jobs.isLoading,
   isThereError: state.jobs.isError
 });
 
@@ -16,10 +16,18 @@ const mapDispatchToProps = (dispatch) => ({
   getJobs: (url) => dispatch(getJobsAction(url))
 });
 
-const Homepage = ({ favLength, getJobs, jobs, areJobsLoading }) => {
+const Homepage = ({
+  favLength,
+  getJobs,
+  jobs,
+  areJobsLoading,
+  isThereError
+}) => {
   // const [state, setState] = useState([]); // mapstate to props
   const [search, setSearch] = useState("");
   const [searchBy, setSearchBy] = useState("");
+
+  console.log("what??", areJobsLoading);
 
   useEffect(() => {
     let url;
@@ -36,7 +44,7 @@ const Homepage = ({ favLength, getJobs, jobs, areJobsLoading }) => {
       url = `https://strive-jobs-api.herokuapp.com/jobs?category=${searchBy}&search=${search}&limit=10`;
     }
     getJobs(url);
-  }, [search, searchBy]);
+  }, [search, searchBy, getJobs]);
 
   return (
     <Container className="mt-5">
@@ -89,19 +97,39 @@ const Homepage = ({ favLength, getJobs, jobs, areJobsLoading }) => {
 
       <h1>JOB LISTS</h1>
       {areJobsLoading ? (
-        <div className="text-center">
-          <Spinner variant="danger" animation="border" />
-          <h1>Loading...</h1>
-        </div>
+        <Spinner animation="border" variant="primary" />
+      ) : isThereError ? (
+        <Alert variant="danger">Error</Alert>
       ) : (
         <ListGroup>
           {jobs.map((job) => (
-            <SingleJobs key={job._id} job={job} />
+            <SingleJobs key={job.id} job={job} />
           ))}
         </ListGroup>
       )}
     </Container>
   );
 };
+
+{
+  /* {areJobsLoading && (
+        <div className="text-center">
+          <Spinner variant="success" animation="border" />
+        </div>
+      )}
+      {!areJobsLoading && (
+        <ListGroup>
+          {jobs.map((job) => (
+            <SingleJobs key={job._id} job={job} />
+          ))}
+        </ListGroup>
+      )}
+      {isThereError && !areJobsLoading && (
+        <Alert variant="danger">Error! :(</Alert>
+      )} */
+}
+// </Container>
+// //   );
+// // };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Homepage);
