@@ -111,25 +111,4 @@ const Homepage = ({
   );
 };
 
-{
-  /* {areJobsLoading && (
-        <div className="text-center">
-          <Spinner variant="success" animation="border" />
-        </div>
-      )}
-      {!areJobsLoading && (
-        <ListGroup>
-          {jobs.map((job) => (
-            <SingleJobs key={job._id} job={job} />
-          ))}
-        </ListGroup>
-      )}
-      {isThereError && !areJobsLoading && (
-        <Alert variant="danger">Error! :(</Alert>
-      )} */
-}
-// </Container>
-// //   );
-// // };
-
 export default connect(mapStateToProps, mapDispatchToProps)(Homepage);
