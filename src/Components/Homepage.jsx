@@ -4,6 +4,7 @@ import SingleJobs from "./SingleJobs";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { getJobsAction, getUserNameAction } from "../redux/actions";
+import Pagination from "./Pagination";
 
 // value
 // mapStateToProps = (state) => ({
@@ -39,22 +40,33 @@ const Homepage = () => {
   const [searchBy, setSearchBy] = useState("");
   const [inputName, setInputName] = useState("");
 
+  //Pagination https://blog.logrocket.com/pagination-components-react-tailwind-css/
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(10);
+
   useEffect(() => {
     let url;
     if (searchBy !== "Search by") {
-      url = `https://strive-jobs-api.herokuapp.com/jobs?category=${searchBy}&limit=10`;
+      url = `https://strive-jobs-api.herokuapp.com/jobs?category=${searchBy}&limit=100`;
     }
     if (search !== "") {
-      url = `https://strive-jobs-api.herokuapp.com/jobs?search=${search}&limit=10`;
+      url = `https://strive-jobs-api.herokuapp.com/jobs?search=${search}&limit=100`;
     }
     if (search === "" && searchBy === "Search by") {
-      url = `https://strive-jobs-api.herokuapp.com/jobs?limit=10`;
+      url = `https://strive-jobs-api.herokuapp.com/jobs?limit=100`;
     }
     if (search !== "" && searchBy !== "Search by") {
-      url = `https://strive-jobs-api.herokuapp.com/jobs?category=${searchBy}&search=${search}&limit=10`;
+      url = `https://strive-jobs-api.herokuapp.com/jobs?category=${searchBy}&search=${search}&limit=100`;
     }
     dispatch(getJobsAction(url));
   }, [search, searchBy]);
+
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = jobs.slice(indexOfFirstPost, indexOfLastPost);
+
+  const paginateFront = () => setCurrentPage(currentPage + 1);
+  const paginateBack = () => setCurrentPage(currentPage - 1);
 
   return (
     <Container className="mt-5">
@@ -133,9 +145,16 @@ const Homepage = () => {
         <Alert variant="danger">Error</Alert>
       ) : (
         <ListGroup>
-          {jobs.map((job) => (
+          {currentPosts.map((job) => (
             <SingleJobs key={job._id} job={job} />
           ))}
+          <Pagination
+            postsPerPage={postsPerPage}
+            totalPosts={jobs.length}
+            paginateBack={paginateBack}
+            paginateFront={paginateFront}
+            currentPage={currentPage}
+          />
         </ListGroup>
       )}
     </Container>
