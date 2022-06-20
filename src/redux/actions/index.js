@@ -3,14 +3,20 @@ export const REMOVE_FROM_FAV = "REMOVE_FROM_FAV";
 export const GET_JOBS = "GET_JOBS";
 export const TOGGLE_SPINNER = "TOGGLE_SPINNER";
 export const TOGGLE_ERROR = "TOGGLE_ERROR";
+export const SET_NAME = "SET_NAME";
 
 export const addToFavAction = (jobToAddToFav) => ({
-  type: "ADD_FAVOURITE",
+  type: ADD_FAVOURITE,
   payload: jobToAddToFav
 });
 export const removeFromFavAction = (indexToRemove) => ({
-  type: "REMOVE_FROM_FAV",
+  type: REMOVE_FROM_FAV,
   payload: indexToRemove
+});
+
+export const getUserNameAction = (name) => ({
+  type: SET_NAME,
+  payload: name
 });
 
 export const getJobsAction = (url) => {

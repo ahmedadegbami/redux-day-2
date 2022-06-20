@@ -1,33 +1,43 @@
 import { Container, ListGroup, Form, Spinner, Alert } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import SingleJobs from "./SingleJobs";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getJobsAction } from "../redux/actions";
+import { getJobsAction, getUserNameAction } from "../redux/actions";
 
-const mapStateToProps = (state) => ({
-  favLength: state.favourite.content.length,
-  jobs: state.jobs.list,
-  areJobsLoading: state.jobs.isLoading,
-  isThereError: state.jobs.isError
-});
+// value
+// mapStateToProps = (state) => ({
+//   favLength: state.favourite.content.length,
+//   jobs: state.jobs.list,
+//   areJobsLoading: state.jobs.isLoading,
+//   isThereError: state.jobs.isError
+// });
 
-const mapDispatchToProps = (dispatch) => ({
-  getJobs: (url) => dispatch(getJobsAction(url))
-});
+// const mapDispatchToProps = (dispatch) => ({
+//   getJobs: (url) => dispatch(getJobsAction(url))
+// });
 
-const Homepage = ({
-  favLength,
-  getJobs,
-  jobs,
-  areJobsLoading,
-  isThereError
-}) => {
+// const Homepage = ({
+//   favLength,
+//   getJobs,
+//   jobs,
+//   areJobsLoading,
+//   isThereError
+// }) => {
+
+const Homepage = () => {
+  const favLength = useSelector((state) => state.favourite.content.length);
+  const jobs = useSelector((state) => state.jobs.list);
+  const areJobsLoading = useSelector((state) => state.jobs.isLoading);
+  const isThereError = useSelector((state) => state.jobs.isError);
+  const userName = useSelector((state) => state.user.name);
+
+  const dispatch = useDispatch();
+
   // const [state, setState] = useState([]); // mapstate to props
   const [search, setSearch] = useState("");
   const [searchBy, setSearchBy] = useState("");
-
-  console.log("what??", areJobsLoading);
+  const [inputName, setInputName] = useState("");
 
   useEffect(() => {
     let url;
@@ -43,23 +53,44 @@ const Homepage = ({
     if (search !== "" && searchBy !== "Search by") {
       url = `https://strive-jobs-api.herokuapp.com/jobs?category=${searchBy}&search=${search}&limit=10`;
     }
-    getJobs(url);
-  }, [search, searchBy, getJobs]);
+    dispatch(getJobsAction(url));
+  }, [search, searchBy]);
 
   return (
     <Container className="mt-5">
+      <div className="d-flex justify-content-end">
+        {!userName ? (
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+              dispatch(getUserNameAction(inputName));
+            }}
+          >
+            <Form.Group />
+            <Form.Control
+              type="text"
+              placeholder="Enter name"
+              value={inputName}
+              onChange={(e) => setInputName(e.target.value)}
+            />
+          </Form>
+        ) : (
+          <>
+            <h4 className="mr-2">Welcome {userName + "!"} </h4>
+            <Link to={"/favourite"}>
+              <button type="button" className="btn btn-primary">
+                Favourites{" "}
+                <span className="badge badge-light">{favLength}</span>
+              </button>
+            </Link>
+          </>
+        )}
+      </div>
+      <Form.Label>Example select</Form.Label>
       <Form.Group
         controlId="exampleForm.ControlSelect1"
         onChange={(e) => setSearchBy(e.target.value)}
       >
-        <div className="d-flex justify-content-between">
-          <Form.Label>Example select</Form.Label>
-          <Link to={"/favourite"}>
-            <button type="button" className="btn btn-primary">
-              Favourites <span className="badge badge-light">{favLength}</span>
-            </button>
-          </Link>
-        </div>
         <Form.Control as="select">
           <option>Search by</option>
           <option value={"All others"}>All others</option>
@@ -103,7 +134,7 @@ const Homepage = ({
       ) : (
         <ListGroup>
           {jobs.map((job) => (
-            <SingleJobs key={job.id} job={job} />
+            <SingleJobs key={job._id} job={job} />
           ))}
         </ListGroup>
       )}
@@ -111,4 +142,5 @@ const Homepage = ({
   );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Homepage);
+export default Homepage;
+// export default connect(mapStateToProps, mapDispatchToProps)(Homepage);

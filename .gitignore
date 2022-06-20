@@ -1,5 +1,9 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+// This file is ignored by git because it contains secrets.
+.env
+
+
 # dependencies
 /node_modules
 /.pnp
